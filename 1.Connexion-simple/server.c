@@ -7,7 +7,7 @@
 #include <arpa/inet.h>          // inet_pton(), inet_ntoa() → conversion des adresses IP entre texte et binaire
 
 
-// 📡 Côté serveur :
+// Côté serveur :
 // 1. Création du socket : socket()
 // 2. Association à une adresse IP et un port : bind()
 // 3. Écoute des connexions entrantes : listen()

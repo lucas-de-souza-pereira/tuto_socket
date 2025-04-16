@@ -5,7 +5,7 @@
 #include <arpa/inet.h>          // inet_pton, htons, sockaddr_in
 #include <sys/socket.h>         // socket, connect, send, recv...
 
-
+// coté client : 
 // 1. Créer le socket du client
 // 2. Définir l'addresse du serveur à contacter 
 // 3. Se connecter au serveur
