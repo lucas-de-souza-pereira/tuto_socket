@@ -143,7 +143,7 @@ int main(){
     // }
     
 
-    char *reponse = "Hello client ! Bienvenue 🖖";
+    char *reponse = "Hello client ! Bienvenue !";
     send(client_fd,reponse, strlen(reponse),0);
 
     // attention send peut être aussi bloquant, 
