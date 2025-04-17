@@ -1,13 +1,36 @@
-#include <stdio.h>              // printf(), perror()
-#include <stdlib.h>             // exit()
-#include <string.h>             // memset(), strlen(), strcpy()
-#include <unistd.h>             // close(), read(), write()
-#include <sys/socket.h>         // socket(), bind(), listen(), accept(), send(), recv()
-#include <netinet/in.h>         // struct sockaddr_in, htons()
-#include <arpa/inet.h>          // inet_ntoa(), ntohs()
+#include <stdio.h>              // printf(), perror() → affichage, messages d’erreur
+#include <stdlib.h>             // exit(), malloc() → fonctions système, allocation
+#include <string.h>             // memset(), strlen(), strcpy(), strcmp() → gestion des chaînes
+#include <unistd.h>             // close(), read(), write() → appels système de bas niveau
+#include <sys/socket.h>         // socket(), bind(), listen(), accept(), send(), recv() → fonctions de sockets
+#include <netinet/in.h>         // struct sockaddr_in, htons() → adresses réseau et conversions
+#include <arpa/inet.h>          // inet_ntoa(), ntohs() → conversion IP et port
+#include <signal.h>             // signal(), SIGINT → gestion des signaux système (ex : Ctrl+C)
+
+int server_fd;
+int client_fd;
+
+// fermer le servedur proprement en cas de ctrl+C
+void handle_sigint(int sig) {
+    printf("\n[Ctrl+C] Arrêt du serveur...\n");
+
+    if (client_fd > 0) {
+        close(client_fd);
+        printf("Connexion client fermée.\n");
+    }
+
+    if (server_fd > 0) {
+        close(server_fd);
+        printf("Socket serveur fermé.\n");
+    }
+
+    exit(0);
+}
+
 
 int main() {
-    int server_fd;
+   
+    signal(SIGINT, handle_sigint);
 
     // 1. Créer le socket
     server_fd = socket(AF_INET, SOCK_STREAM, 0);
