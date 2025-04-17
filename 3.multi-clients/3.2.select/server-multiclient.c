@@ -194,6 +194,12 @@ int main(){
         // NULL	        Tu ne veux pas surveiller les erreurs réseau
         // NULL	        Tu ne veux pas de timeout → tu bloques indéfiniment jusqu'à ce qu'un socket soit prêt
 
+
+
+
+
+
+        ////////// EN COURS ///// WORK IN PROGRESS //////
      }
 
 }
