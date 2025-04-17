@@ -17,7 +17,7 @@ Chaque étape correspond à une **version évoluée** du client/serveur :
 
 1. 🖨️ Serveur + client simples (affichage de messages)
 2. ⌨️ Saisie clavier côté client (input dynamique)
-3. 👥 Serveur multi-clients (avec `fork()`)
+3. 👥 Serveur multi-clients (avec `fork()`, `select()`, `threads`)
 4. 🗄️ Multi-clients + Connexion à une base de données PostgreSQL (en cours)
 
 Chaque programme est **commenté en détail**, ligne par ligne, pour aider à comprendre la logique.
@@ -51,3 +51,4 @@ Si tu veux échanger sur le sujet ou poser une question, tu peux ouvrir une issu
 ## 🚀 À venir
 
 - [ ] Version avec threads (`pthread`)
+- [ ] Version connexion PostgreSQL (`PostgreSQL`)
