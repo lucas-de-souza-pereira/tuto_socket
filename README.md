@@ -44,7 +44,7 @@ Et si ce repo t’aide, pense à lâcher une petite ⭐ :)
 
 ## 📫 Contact
 
-Si tu veux échanger sur le sujet ou poser une question, tu peux ouvrir une issue ou me contacter sur [GitHub](https://github.com/ton_pseudo).
+Si tu veux échanger sur le sujet ou poser une question, tu peux ouvrir une issue ou me contacter sur [GitHub](https://github.com/lucas-de-souza-pereira).
 
 ---
 
