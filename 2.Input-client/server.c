@@ -10,7 +10,7 @@
 int server_fd;
 int client_fd;
 
-// fermer le servedur proprement en cas de ctrl+C
+// fermer le serveur proprement en cas de ctrl+C
 void handle_sigint(int sig){
     printf("\n[Ctrl+C] Arrêt du serveur...\n");
 // si une erreur de connexion client ou server_fd = -1
@@ -37,9 +37,9 @@ int main() {
 
     // 2. Définir l’adresse du serveur
     struct sockaddr_in server_addr;
-    server_addr.sin_family = AF_INET;
-    server_addr.sin_addr.s_addr = INADDR_ANY;
-    server_addr.sin_port = htons(8080);
+        server_addr.sin_family = AF_INET;
+        server_addr.sin_addr.s_addr = INADDR_ANY;
+        server_addr.sin_port = htons(8080);
 
     // 3. Lier le socket à l’adresse
     bind(server_fd, (struct sockaddr*)&server_addr, sizeof(server_addr));
