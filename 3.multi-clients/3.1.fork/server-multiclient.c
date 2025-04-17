@@ -7,6 +7,17 @@
 #include <arpa/inet.h>          // inet_ntoa(), ntohs() → conversion IP et port
 #include <signal.h>             // signal(), SIGINT → gestion des signaux système (ex : Ctrl+C)
 
+// a quoi sert fork ? 
+// À gérer plusieurs clients en parallèle (serveur réseau)
+
+// À lancer des processus indépendants (ex: un terminal qui ouvre un programme)
+
+// À créer des pipelines en shell (ls | grep x utilise fork())
+
+//  À retenir :
+// Chaque fork() = 2 programmes qui vivent chacun leur vie
+// attention à bien gérer les ressources, sockets, fermeture, etc.
+
 
 int server_fd;
 int client_fd;
