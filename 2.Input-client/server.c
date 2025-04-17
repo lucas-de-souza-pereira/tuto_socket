@@ -11,15 +11,15 @@ int server_fd;
 int client_fd;
 
 // fermer le servedur proprement en cas de ctrl+C
-void handle_sigint(int sig) {
+void handle_sigint(int sig){
     printf("\n[Ctrl+C] Arrêt du serveur...\n");
-
-    if (client_fd > 0) {
+// si une erreur de connexion client ou server_fd = -1
+    if (client_fd != -1){
         close(client_fd);
         printf("Connexion client fermée.\n");
     }
 
-    if (server_fd > 0) {
+    if (server_fd != -1){
         close(server_fd);
         printf("Socket serveur fermé.\n");
     }

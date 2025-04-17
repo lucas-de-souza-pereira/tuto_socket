@@ -76,7 +76,7 @@ while (1) {
     int bytes_read = read(client_fd, buffer, sizeof(buffer));
 
     if (bytes_read <= 0) {
-        printf("❌ Le serveur a fermé la connexion.\n");
+        printf("Le serveur a fermé la connexion.\n");
         break;
     }
 
