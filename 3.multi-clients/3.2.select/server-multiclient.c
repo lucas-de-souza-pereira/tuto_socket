@@ -6,14 +6,39 @@
 #include <netinet/in.h>         // struct sockaddr_in, htons()
 #include <arpa/inet.h>          // inet_ntoa()
 #include <sys/select.h>
+#include <signal.h>  // pour signal() et SIGINT
+
 
 
 #define PORT 8080 // port d'écoute du serveur
 #define MAX_CLIENTS 10 // nom de connexion max en meme temps 
 
+int server_fd;                    // socket serveur (déclaré globalement)
+int client_sockets[MAX_CLIENTS];  // tableau global pour y accéder dans la fonction
+
+void handle_sigint(int sig) {
+    printf("\nCtrl+C détecté. Fermeture du serveur...\n");
+
+    // Fermer tous les clients connectés
+    for (int i = 0; i < MAX_CLIENTS; i++) {
+        if (client_sockets[i] != -1) {
+            close(client_sockets[i]);
+            printf("Client %d déconnecté.\n", client_sockets[i]);
+        }
+    }
+
+    // Fermer le socket serveur
+    if (server_fd != -1) {
+        close(server_fd);
+        printf("Socket serveur fermé.\n");
+    }
+
+    exit(0); // Quitter proprement
+}
+
 int main(){
 
-    int server_fd;
+    // int server_fd; si pas de fermeture avec ctrl+C on le déclare ici
     struct sockaddr_in server_addr;
     
     // 1. Créer le socket serveur (TCP/IP)
@@ -22,7 +47,8 @@ int main(){
         perror("Erreur socket");
         exit(EXIT_FAILURE);
     }
-    
+    signal(SIGINT, handle_sigint); // Capture Ctrl+C
+
     // 2. Préparer la structure de l'adresse du serveur
     server_addr.sin_family = AF_INET;              // Famille d'adresses : IPv4
     server_addr.sin_addr.s_addr = INADDR_ANY;      // Écouter sur toutes les interfaces
@@ -56,7 +82,7 @@ int main(){
 
     printf("Serveur en écoute sur le port %d...\n", PORT);
     
-    int client_sockets[MAX_CLIENTS]; // tableau de sockets clients
+    // int client_sockets[MAX_CLIENTS]; // tableau de sockets clients, si pas de fermeture avec ctrl+C on le déclare ici
     fd_set read_fds; // ensemble des sockets à surveiller 
     int max_fd;     // valeur max à donner à select()
 
@@ -195,11 +221,91 @@ int main(){
         // NULL	        Tu ne veux pas de timeout → tu bloques indéfiniment jusqu'à ce qu'un socket soit prêt
 
 
+        // 5. Est-ce que le socket serveur est prêt ? (nouvelle connexion)
+
+        //            +-----------------------+
+        // client →  | Socket serveur (fd=3)  |
+        //           +------------------------+
+        //                     ↓
+        //           [FD_ISSET] déclenché !
+        //                     ↓
+        //     accept() → crée un nouveau socket (ex: fd=4)
+        //                     ↓
+        //          client_sockets[0] = 4
 
 
+        if (FD_ISSET(server_fd, &read_fds)){
+            struct sockaddr_in client_addr;
+            socklen_t client_len = sizeof(client_addr);
+        // vérifier si le socket serveur (celui qui écoute) a été marqué comme "prêt à lire" par select().
+        // préparer une variable où accept() va écrire l’adresse du client (IP + port).
+
+            int new_socket = accept(server_fd, (struct sockaddr*)&client_addr, &client_len);
+            // Cette ligne fait 3 choses :
+            // 1. Accepte la connexion du client qui attend
+            // 2. Retourne un nouveau socket (new_socket) pour communiquer avec lui
+            // 3. Remplit client_addr avec l’adresse IP et le port du client
+
+            if (new_socket < 0){ //verif si accept à échouer
+                perror("Erreur accept");
+                continue;
+            } 
+        
+            printf("Nouveau client connecté depuis %s:%d\n",
+                    inet_ntoa(client_addr.sin_addr), // retourne "127.0.0.1" (par exemple)
+                    ntohs(client_addr.sin_port)); // ex: retourne 51734 (en format lisible) convertit un port (sur 2 octets) du format réseau → format local (host).
+        
+          
 
 
-        ////////// EN COURS ///// WORK IN PROGRESS //////
+            // 6. Stocker ce nouveau client dans le tableau
+            
+            for (int i = 0; i < MAX_CLIENTS; i++){
+                if (client_sockets[i] == -1){ //-1 -> trouve le premier emplacement vide 
+                    client_sockets[i] = new_socket; //stocke new_socket dans le tableau pour l’ajouter à select() au prochain tour
+                    break;
+                }
+        }
+    }
+    
+
+     // 7. Lire les messages des clients actifs
+
+        for (int i = 0; i < MAX_CLIENTS; i++){
+            int fd = client_sockets[i];
+        
+            //vérifier que le slot est utilisé ET que ce client a parlé
+            if (fd != -1 && FD_ISSET(fd, &read_fds)){
+                char buffer[1024] = {0};
+
+                int bytes_read = read(fd,buffer,sizeof(buffer));
+                if (bytes_read <= 0){
+                    printf("Client %d déconnecté.\n", fd);
+                    close(fd);
+                    client_sockets[i] = -1;
+                }else{
+
+                    printf("Message reçu de %d : %s\n", fd, buffer);
+
+                    // si le client veut quitter
+                    if (strcmp(buffer,"exit") == 0){
+                        printf("Le client %d a demandé la déconnexion.\n", fd);
+                        send(fd, "Bye bye", strlen("Bye bye"), 0);
+                        close(fd);
+                        client_sockets[i] = -1;
+                        continue;
+                    }
+
+                    //  Sinon, réponse normale
+                    if (strcmp(buffer, "ping") == 0) {
+                        send(fd, "pong", 4, 0);
+                    } else {
+                        send(fd, "Bien reçu !", strlen("Bien reçu !"), 0);
+                    }
+            
+                }
+            }
+        }
      }
-
+    return 0;
 }
