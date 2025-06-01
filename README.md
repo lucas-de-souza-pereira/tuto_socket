@@ -22,6 +22,8 @@ Chaque étape correspond à une **version évoluée** du client/serveur :
 
 Chaque programme est **commenté en détail**, ligne par ligne, pour aider à comprendre la logique.
 
+Attention : ce tutoriel est uniquement compatible avec un environnement linux
+
 ---
 
 ## 🙌 Pourquoi ce projet ?
